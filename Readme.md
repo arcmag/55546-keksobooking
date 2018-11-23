@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Николай Блинов](https://up.htmlacademy.ru/javascript/16/user/55546).
-* Наставник: `Неизвестно`.
+* Наставник: [Дмитрий Шамрило](https://htmlacademy.ru/profile/shamrilods).
 
 ---
 
