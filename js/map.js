@@ -53,14 +53,7 @@ function getRandomArrayElement(array) {
 }
 
 function getRandomPhotoList() {
-  var copyPhotoArr = OFFER_PHOTOS_LIST.slice();
-  var newPhotoArr = [];
-
-  for (var i = 0; i < OFFER_PHOTOS_LIST.length; i++) {
-    newPhotoArr.push(copyPhotoArr.splice(getRandomInt(copyPhotoArr.length - 1, 0), 1)[0]);
-  }
-
-  return newPhotoArr;
+  return OFFER_PHOTOS_LIST.slice().sort(compare);
 }
 
 function getRandomFeaturesList() {
