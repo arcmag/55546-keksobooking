@@ -30,15 +30,8 @@ var mapPins = document.querySelector('.map__pins');
 var sentenceList = [];
 var avatarList = [];
 
-function getDataSizePin() {
-  var copyPin = mapPinTmp.cloneNode(true);
-  document.body.appendChild(copyPin);
-  var dataPin = copyPin.getBoundingClientRect();
-  copyPin.parentNode.removeChild(copyPin);
-
-  return dataPin;
-}
-var DATA_SIZE_PIN = getDataSizePin();
+var PIN_WIDTH = 50;
+var PIN_HEIGHT = 70;
 
 mapBlock.classList.remove('map--faded');
 
@@ -74,14 +67,13 @@ function getRandomFeaturesList() {
 }
 
 function getRandomLocationCoord() {
-  var offsetX = (DATA_SIZE_PIN.width / 2);
-  var offsetY = DATA_SIZE_PIN.height;
-  var randomX = getRandomInt(mapBlock.getBoundingClientRect().width - (DATA_SIZE_PIN.width + offsetX), 0);
-  var randomY = getRandomInt(630 - offsetY, 130);
+  var offsetX = PIN_WIDTH / 2;
+  var randomX = getRandomInt(mapBlock.offsetWidth - (PIN_WIDTH + offsetX), 0);
+  var randomY = getRandomInt(630 + PIN_HEIGHT, 130);
 
   return {
-    locationX: randomX + offsetX,
-    locationY: randomY + offsetY,
+    locationX: randomX - offsetX,
+    locationY: randomY - PIN_HEIGHT,
     addressX: randomX,
     addressY: randomY
   };
