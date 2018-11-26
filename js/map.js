@@ -74,11 +74,16 @@ function getRandomFeaturesList() {
 }
 
 function getRandomLocationCoord() {
-  var pinX = parseInt(getComputedStyle(mapBlock).width, 10) - DATA_SIZE_PIN.width;
+  var offsetX = (DATA_SIZE_PIN.width / 2);
+  var offsetY = DATA_SIZE_PIN.height;
+  var randomX = getRandomInt(mapBlock.getBoundingClientRect().width - (DATA_SIZE_PIN.width + offsetX), 0);
+  var randomY = getRandomInt(630 - offsetY, 130);
 
   return {
-    x: getRandomInt(pinX, 0),
-    y: getRandomInt(630, 130)
+    locationX: randomX + offsetX,
+    locationY: randomY + offsetY,
+    addressX: randomX,
+    addressY: randomY
   };
 }
 
@@ -98,6 +103,8 @@ function createObjectsPins() {
   var dataList = [];
 
   for (var i = 0; i < 8; i++) {
+    var coordLocation = getRandomLocationCoord();
+
     var dataPin = {
       author: {
         avatar: takeRandomArrayElement(avatarList)
@@ -114,11 +121,10 @@ function createObjectsPins() {
         description: '',
         photos: getRandomPhotoList()
       },
-      location: getRandomLocationCoord()
+      location: {x: coordLocation.locationX, y: coordLocation.locationY}
     };
 
-    dataPin.offer.address = (dataPin.location.x + (DATA_SIZE_PIN.width / 2)) + ', ' +
-      (dataPin.location.y + DATA_SIZE_PIN.height);
+    dataPin.offer.address = coordLocation.addressX + ', ' + coordLocation.addressY;
 
     dataList.push(dataPin);
   }
