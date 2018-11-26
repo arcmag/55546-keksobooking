@@ -68,8 +68,8 @@ function getRandomFeaturesList() {
 
 function getRandomLocationCoord() {
   var offsetX = PIN_WIDTH / 2;
-  var randomX = getRandomInt(mapBlock.offsetWidth - (PIN_WIDTH + offsetX), 0);
-  var randomY = getRandomInt(630 + PIN_HEIGHT, 130);
+  var randomX = getRandomInt(mapBlock.offsetWidth - offsetX, 0 + offsetX);
+  var randomY = getRandomInt(630 - PIN_HEIGHT, 130 + PIN_HEIGHT);
 
   return {
     locationX: randomX - offsetX,
