@@ -28,9 +28,9 @@ var mapCardTmp = document.querySelector('#pin');
 var mapPinTmp = mapCardTmp.content.querySelector('.map__pin');
 var mapPins = document.querySelector('.map__pins');
 var sentenceList = [];
+var avatarList = [];
 
-mapBlock.classList.remove('.map--faded');
-
+mapBlock.classList.remove('map--faded');
 
 function getRandomInt(max, min) {
   return Math.floor((Math.random()) * (max - min + 1) + min);
@@ -40,8 +40,15 @@ function compare() {
   return Math.random() - 0.5;
 }
 
+function createAvatarList() {
+  for (var i = 1; i <= 8; i++) {
+    avatarList.push('img/avatars/user0' + i + '.png');
+  }
+}
+createAvatarList();
+
 function getRandomAuthorAvatar() {
-  return 'img/avatars/user0' + getRandomInt(8, 1) + '.png';
+  return avatarList.sort(compare).splice(0, 1)[0];
 }
 
 function getRandomOfferTitle() {
@@ -71,9 +78,10 @@ function getRandomLocationCoord() {
 
 function getMapPin(object) {
   var pin = mapPinTmp.cloneNode(true);
+  var img = pin.querySelector('img');
 
-  pin.src = object.author.avatar;
-  pin.alt = object.offer.title;
+  img.src = object.author.avatar;
+  img.alt = object.offer.title;
   pin.style.left = object.location.x + 'px';
   pin.style.top = object.location.y + 'px';
 
@@ -81,6 +89,8 @@ function getMapPin(object) {
 }
 
 function createObjectsPins() {
+  var dataList = [];
+
   for (var i = 0; i < 8; i++) {
     var dataPin = {
       author: {
@@ -103,10 +113,12 @@ function createObjectsPins() {
 
     dataPin.offer.address = dataPin.location.x + ', ' + dataPin.location.y;
 
-    sentenceList.push(dataPin);
+    dataList.push(dataPin);
   }
+
+  return dataList;
 }
-createObjectsPins();
+sentenceList = createObjectsPins();
 
 function outputMapPins() {
   var mapPinContainer = document.createDocumentFragment();
@@ -123,17 +135,20 @@ function outputMapCard() {
   var sentence = sentenceList[0];
   var cardTmp = document.querySelector('#card');
   var card = cardTmp.content.querySelector('.map__card').cloneNode(true);
+  var sentenceOfferType = '';
 
   card.querySelector('.popup__title').textContent = sentence.offer.title;
   card.querySelector('.popup__text--address').textContent = sentence.offer.address;
   card.querySelector('.popup__text--price').textContent = sentence.offer.price + 'Р/ночь';
 
-  card.querySelector('.popup__type').textContent = ({
-    'palace': 'Дворец',
-    'flat': 'Квартира',
-    'house': 'Дом',
-    'bungalo': 'Бунгало'
-  })[sentence.offer.type];
+  switch (sentence.offer.type) {
+    case 'palace': sentenceOfferType = 'Дворец'; break;
+    case 'flat': sentenceOfferType = 'Квартира'; break;
+    case 'house': sentenceOfferType = 'Дом'; break;
+    case 'bungalo': sentenceOfferType = 'Бунгало'; break;
+  }
+
+  card.querySelector('.popup__type').textContent = sentenceOfferType;
 
   card.querySelector('.popup__text--capacity').textContent = sentence.offer.rooms + ' комнаты для ' + sentence.offer.guests + ' гостей';
   card.querySelector('.popup__text--time').textContent = 'Заезд после ' + sentence.offer.checkin + ', выезд до ' + sentence.offer.checkout;
