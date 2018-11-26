@@ -30,6 +30,16 @@ var mapPins = document.querySelector('.map__pins');
 var sentenceList = [];
 var avatarList = [];
 
+function getDataSizePin() {
+  var copyPin = mapPinTmp.cloneNode(true);
+  document.body.appendChild(copyPin);
+  var dataPin = copyPin.getBoundingClientRect();
+  copyPin.parentNode.removeChild(copyPin);
+
+  return dataPin;
+}
+var DATA_SIZE_PIN = getDataSizePin();
+
 mapBlock.classList.remove('map--faded');
 
 function getRandomInt(max, min) {
@@ -47,12 +57,8 @@ function createAvatarList() {
 }
 createAvatarList();
 
-function getRandomAuthorAvatar() {
-  return avatarList.sort(compare).splice(0, 1)[0];
-}
-
-function getRandomOfferTitle() {
-  return OFFER_TITLE_LIST.sort(compare).pop();
+function takeRandomArrayElement(array) {
+  return array.sort(compare).pop();
 }
 
 function getRandomArrayElement(array) {
@@ -68,11 +74,11 @@ function getRandomFeaturesList() {
 }
 
 function getRandomLocationCoord() {
-  var pinX = parseInt(getComputedStyle(mapBlock).width, 10) - mapPinTmp.querySelector('img').width;
+  var pinX = parseInt(getComputedStyle(mapBlock).width, 10) - DATA_SIZE_PIN.width;
 
   return {
-    y: getRandomInt(630, 130),
-    x: getRandomInt(pinX, 0)
+    x: getRandomInt(pinX, 0),
+    y: getRandomInt(630, 130)
   };
 }
 
@@ -94,10 +100,10 @@ function createObjectsPins() {
   for (var i = 0; i < 8; i++) {
     var dataPin = {
       author: {
-        avatar: getRandomAuthorAvatar()
+        avatar: takeRandomArrayElement(avatarList)
       },
       offer: {
-        title: getRandomOfferTitle(),
+        title: takeRandomArrayElement(OFFER_TITLE_LIST),
         price: getRandomInt(1000000, 1000),
         type: getRandomArrayElement(OFFER_TYPE_LIST),
         rooms: getRandomInt(5, 1),
@@ -111,7 +117,8 @@ function createObjectsPins() {
       location: getRandomLocationCoord()
     };
 
-    dataPin.offer.address = dataPin.location.x + ', ' + dataPin.location.y;
+    dataPin.offer.address = (dataPin.location.x + (DATA_SIZE_PIN.width / 2)) + ', ' +
+      (dataPin.location.y + DATA_SIZE_PIN.height);
 
     dataList.push(dataPin);
   }
@@ -142,10 +149,20 @@ function outputMapCard() {
   card.querySelector('.popup__text--price').textContent = sentence.offer.price + 'Р/ночь';
 
   switch (sentence.offer.type) {
-    case 'palace': sentenceOfferType = 'Дворец'; break;
-    case 'flat': sentenceOfferType = 'Квартира'; break;
-    case 'house': sentenceOfferType = 'Дом'; break;
-    case 'bungalo': sentenceOfferType = 'Бунгало'; break;
+    case 'palace':
+      sentenceOfferType = 'Дворец';
+      break;
+    case 'flat':
+      sentenceOfferType = 'Квартира';
+      break;
+    case 'house':
+      sentenceOfferType = 'Дом';
+      break;
+    case 'bungalo':
+      sentenceOfferType = 'Бунгало';
+      break;
+    default:
+      sentenceOfferType = 'Неизвестно';
   }
 
   card.querySelector('.popup__type').textContent = sentenceOfferType;
