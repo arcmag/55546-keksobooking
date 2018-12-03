@@ -100,8 +100,6 @@ function getMapPin(object, index) {
 
   pin.addEventListener('click', outputMapCard);
 
-  console.log(pin);
-
   return pin;
 }
 
