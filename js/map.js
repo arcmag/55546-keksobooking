@@ -23,7 +23,10 @@ var OFFER_PHOTOS_LIST = [
   'http://o0.github.io/assets/images/tokyo/hotel3.jpg'
 ];
 
+var mapPinMain = document.querySelector('.map__pin--main');
+
 var mapBlock = document.querySelector('.map');
+var adForm = document.querySelector('.ad-form');
 var mapCardTmp = document.querySelector('#pin');
 var mapPinTmp = mapCardTmp.content.querySelector('.map__pin');
 var mapPins = document.querySelector('.map__pins');
@@ -33,7 +36,12 @@ var avatarList = [];
 var PIN_WIDTH = 50;
 var PIN_HEIGHT = 70;
 
-mapBlock.classList.remove('map--faded');
+mapPinMain.addEventListener('click', function () {
+  mapBlock.classList.remove('map--faded');
+  adForm.classList.remove('ad-form--disabled');
+
+  outputMapPins();
+});
 
 function getRandomInt(max, min) {
   return Math.floor((Math.random()) * (max - min + 1) + min);
@@ -79,7 +87,7 @@ function getRandomLocationCoord() {
   };
 }
 
-function getMapPin(object) {
+function getMapPin(object, index) {
   var pin = mapPinTmp.cloneNode(true);
   var img = pin.querySelector('img');
 
@@ -87,6 +95,12 @@ function getMapPin(object) {
   img.alt = object.offer.title;
   pin.style.left = object.location.x + 'px';
   pin.style.top = object.location.y + 'px';
+
+  pin.setAttribute('data-index-pin', index);
+
+  pin.addEventListener('click', outputMapCard);
+
+  console.log(pin);
 
   return pin;
 }
@@ -129,15 +143,18 @@ function outputMapPins() {
   var mapPinContainer = document.createDocumentFragment();
 
   for (var i = 0; i < sentenceList.length; i++) {
-    mapPinContainer.appendChild(getMapPin(sentenceList[i]));
+    mapPinContainer.appendChild(getMapPin(sentenceList[i], i));
   }
 
   mapPins.appendChild(mapPinContainer);
 }
-outputMapPins();
 
-function outputMapCard() {
-  var sentence = sentenceList[0];
+function outputMapCard(e) {
+  if (document.querySelector('.map__card')) {
+    document.querySelector('.map__card').parentElement.removeChild(document.querySelector('.map__card'));
+  }
+
+  var sentence = sentenceList[e.currentTarget.dataset['indexPin']];
   var cardTmp = document.querySelector('#card');
   var card = cardTmp.content.querySelector('.map__card').cloneNode(true);
   var sentenceOfferType = '';
@@ -180,8 +197,11 @@ function outputMapCard() {
     photosCardBlock.appendChild(cardImg);
   }
 
-  card.querySelector('.popup__avatar').textContent = sentence.author.avatar;
+  card.querySelector('.popup__avatar').src = sentence.author.avatar;
+
+  card.querySelector('.popup__close').addEventListener('click', function () {
+    card.parentElement.removeChild(card);
+  });
 
   mapBlock.insertBefore(card, document.querySelector('.map__filters-container'));
 }
-outputMapCard();
