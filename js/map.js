@@ -153,8 +153,8 @@ function outputMapPins() {
 }
 
 var addressField = document.querySelector('#address');
-function outputPinCoordinate(addrest) {
-  addressField.value = addrest;
+function outputPinCoordinate(address) {
+  addressField.value = address;
 }
 
 function closeEscMapCard(e) {
