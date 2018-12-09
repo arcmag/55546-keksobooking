@@ -178,7 +178,7 @@ function outputMapCard(e) {
   var mapCard = getOpenMapCard();
 
   if (mapCard) {
-    if(+mapCard.dataset['indexPinCard'] === indexPin) {
+    if (+mapCard.dataset['indexPinCard'] === indexPin) {
       return;
     }
     closeMapCard();
