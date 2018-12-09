@@ -23,17 +23,36 @@ var OFFER_PHOTOS_LIST = [
   'http://o0.github.io/assets/images/tokyo/hotel3.jpg'
 ];
 
+var ESC_KEYCODE = 27;
+
+var mapPinMain = document.querySelector('.map__pin--main');
+
 var mapBlock = document.querySelector('.map');
+var adForm = document.querySelector('.ad-form');
 var mapCardTmp = document.querySelector('#pin');
 var mapPinTmp = mapCardTmp.content.querySelector('.map__pin');
 var mapPins = document.querySelector('.map__pins');
 var sentenceList = [];
 var avatarList = [];
 
+var mainPinDataSize = {
+  left: parseInt(mapPinMain.style.left, 10),
+  top: parseInt(mapPinMain.style.top, 10),
+  width: parseInt(getComputedStyle(mapPinMain).width, 10),
+  height: parseInt(getComputedStyle(mapPinMain).height, 10)
+};
+
 var PIN_WIDTH = 50;
 var PIN_HEIGHT = 70;
 
-mapBlock.classList.remove('map--faded');
+mapPinMain.addEventListener('click', function () {
+  mapBlock.classList.remove('map--faded');
+  adForm.classList.remove('ad-form--disabled');
+  var size = mainPinDataSize;
+
+  outputPinCoordinate((size.left + (size.width / 2)) + ', ' + (size.top + size.height));
+  outputMapPins();
+});
 
 function getRandomInt(max, min) {
   return Math.floor((Math.random()) * (max - min + 1) + min);
@@ -79,7 +98,7 @@ function getRandomLocationCoord() {
   };
 }
 
-function getMapPin(object) {
+function getMapPin(object, index) {
   var pin = mapPinTmp.cloneNode(true);
   var img = pin.querySelector('img');
 
@@ -87,6 +106,10 @@ function getMapPin(object) {
   img.alt = object.offer.title;
   pin.style.left = object.location.x + 'px';
   pin.style.top = object.location.y + 'px';
+
+  pin.setAttribute('data-index-pin', index);
+
+  pin.addEventListener('click', outputMapCard);
 
   return pin;
 }
@@ -129,18 +152,51 @@ function outputMapPins() {
   var mapPinContainer = document.createDocumentFragment();
 
   for (var i = 0; i < sentenceList.length; i++) {
-    mapPinContainer.appendChild(getMapPin(sentenceList[i]));
+    mapPinContainer.appendChild(getMapPin(sentenceList[i], i));
   }
 
   mapPins.appendChild(mapPinContainer);
 }
-outputMapPins();
 
-function outputMapCard() {
-  var sentence = sentenceList[0];
+var addressField = document.querySelector('#address');
+addressField.disabled = true;
+function outputPinCoordinate(address) {
+  addressField.value = address;
+}
+
+function closeEscMapCard(e) {
+  if (e.keyCode === ESC_KEYCODE && getOpenMapCard()) {
+    closeMapCard();
+  }
+}
+
+function getOpenMapCard() {
+  return document.querySelector('.map__card') || false;
+}
+
+function closeMapCard() {
+  var mapCard = getOpenMapCard();
+  mapCard.parentElement.removeChild(mapCard);
+  document.removeEventListener('keyup', closeEscMapCard);
+}
+
+function outputMapCard(e) {
+  var indexPin = +e.currentTarget.dataset['indexPin'];
+  var mapCard = getOpenMapCard();
+
+  if (mapCard) {
+    if (+mapCard.dataset['indexPinCard'] === indexPin) {
+      return;
+    }
+    closeMapCard();
+  }
+
+  var sentence = sentenceList[indexPin];
   var cardTmp = document.querySelector('#card');
   var card = cardTmp.content.querySelector('.map__card').cloneNode(true);
   var sentenceOfferType = '';
+
+  card.setAttribute('data-index-pin-card', indexPin);
 
   card.querySelector('.popup__title').textContent = sentence.offer.title;
   card.querySelector('.popup__text--address').textContent = sentence.offer.address;
@@ -180,8 +236,10 @@ function outputMapCard() {
     photosCardBlock.appendChild(cardImg);
   }
 
-  card.querySelector('.popup__avatar').textContent = sentence.author.avatar;
+  card.querySelector('.popup__avatar').src = sentence.author.avatar;
+
+  card.querySelector('.popup__close').addEventListener('click', closeMapCard);
+  document.addEventListener('keyup', closeEscMapCard);
 
   mapBlock.insertBefore(card, document.querySelector('.map__filters-container'));
 }
-outputMapCard();
