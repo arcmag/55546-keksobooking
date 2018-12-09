@@ -23,6 +23,8 @@ var OFFER_PHOTOS_LIST = [
   'http://o0.github.io/assets/images/tokyo/hotel3.jpg'
 ];
 
+var ESC_KEYCODE = 27;
+
 var mapPinMain = document.querySelector('.map__pin--main');
 
 var mapBlock = document.querySelector('.map');
@@ -33,6 +35,8 @@ var mapPins = document.querySelector('.map__pins');
 var sentenceList = [];
 var avatarList = [];
 
+var mainPinDataSize = mapPinMain.getBoundingClientRect();
+
 var PIN_WIDTH = 50;
 var PIN_HEIGHT = 70;
 
@@ -40,6 +44,7 @@ mapPinMain.addEventListener('click', function () {
   mapBlock.classList.remove('map--faded');
   adForm.classList.remove('ad-form--disabled');
 
+  outputPinCoordinate(mainPinDataSize.left + ', ' + mainPinDataSize.top);
   outputMapPins();
 });
 
@@ -147,15 +152,46 @@ function outputMapPins() {
   mapPins.appendChild(mapPinContainer);
 }
 
+var addressField = document.querySelector('#address');
+function outputPinCoordinate(addrest) {
+  addressField.value = addrest;
+}
+
+function closeEscMapCard(e) {
+  if (e.keyCode === ESC_KEYCODE && getOpenMapCard()) {
+    closeMapCard();
+  }
+}
+
+function getOpenMapCard() {
+  return document.querySelector('.map__card') || false;
+}
+
+function closeMapCard() {
+  var mapCard = getOpenMapCard();
+  mapCard.parentElement.removeChild(mapCard);
+  document.removeEventListener('keyup', closeEscMapCard);
+}
+
 function outputMapCard(e) {
-  if (document.querySelector('.map__card')) {
-    document.querySelector('.map__card').parentElement.removeChild(document.querySelector('.map__card'));
+  var indexPin = +e.currentTarget.dataset['indexPin'];
+  var mapCard = getOpenMapCard();
+
+  if (mapCard) {
+    if(+mapCard.dataset['indexPinCard'] === indexPin) {
+      return;
+    }
+    closeMapCard();
   }
 
-  var sentence = sentenceList[e.currentTarget.dataset['indexPin']];
+  var sentence = sentenceList[indexPin];
   var cardTmp = document.querySelector('#card');
   var card = cardTmp.content.querySelector('.map__card').cloneNode(true);
   var sentenceOfferType = '';
+
+  outputPinCoordinate(sentence.offer.address);
+
+  card.setAttribute('data-index-pin-card', indexPin);
 
   card.querySelector('.popup__title').textContent = sentence.offer.title;
   card.querySelector('.popup__text--address').textContent = sentence.offer.address;
@@ -197,9 +233,8 @@ function outputMapCard(e) {
 
   card.querySelector('.popup__avatar').src = sentence.author.avatar;
 
-  card.querySelector('.popup__close').addEventListener('click', function () {
-    card.parentElement.removeChild(card);
-  });
+  card.querySelector('.popup__close').addEventListener('click', closeMapCard);
+  document.addEventListener('keyup', closeEscMapCard);
 
   mapBlock.insertBefore(card, document.querySelector('.map__filters-container'));
 }
