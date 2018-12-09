@@ -35,7 +35,12 @@ var mapPins = document.querySelector('.map__pins');
 var sentenceList = [];
 var avatarList = [];
 
-var mainPinDataSize = mapPinMain.getBoundingClientRect();
+var mainPinDataSize = {
+  left: parseInt(mapPinMain.style.left, 10),
+  top: parseInt(mapPinMain.style.top, 10),
+  width: parseInt(getComputedStyle(mapPinMain).width, 10),
+  height: parseInt(getComputedStyle(mapPinMain).height, 10)
+};
 
 var PIN_WIDTH = 50;
 var PIN_HEIGHT = 70;
@@ -43,8 +48,9 @@ var PIN_HEIGHT = 70;
 mapPinMain.addEventListener('click', function () {
   mapBlock.classList.remove('map--faded');
   adForm.classList.remove('ad-form--disabled');
+  var size = mainPinDataSize;
 
-  outputPinCoordinate(mainPinDataSize.left + ', ' + mainPinDataSize.top);
+  outputPinCoordinate((size.left + (size.width / 2)) + ', ' + (size.top + size.height));
   outputMapPins();
 });
 
@@ -153,6 +159,7 @@ function outputMapPins() {
 }
 
 var addressField = document.querySelector('#address');
+addressField.disabled = true;
 function outputPinCoordinate(address) {
   addressField.value = address;
 }
@@ -188,8 +195,6 @@ function outputMapCard(e) {
   var cardTmp = document.querySelector('#card');
   var card = cardTmp.content.querySelector('.map__card').cloneNode(true);
   var sentenceOfferType = '';
-
-  outputPinCoordinate(sentence.offer.address);
 
   card.setAttribute('data-index-pin-card', indexPin);
 
