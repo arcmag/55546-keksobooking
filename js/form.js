@@ -45,23 +45,12 @@
       {value: 0, text: 'не для гостей'}
     ];
 
-    var openedOptionsList = [];
-    var value = e ? +e.currentTarget.value : 1;
-
-    switch (value) {
-      case 1:
-        openedOptionsList = [2];
-        break;
-      case 2:
-        openedOptionsList = [1, 2];
-        break;
-      case 3:
-        openedOptionsList = [0, 1, 2];
-        break;
-      case 100:
-        openedOptionsList = [3];
-        break;
-    }
+    var openedOptionsList = ({
+      '1': [2],
+      '2': [1, 2],
+      '3': [0, 1, 2],
+      '100': [3]
+    })[e ? +e.currentTarget.value : 1] || [];
 
     var container = document.createDocumentFragment();
     for (var i = 0; i < openedOptionsList.length; i++) {
@@ -81,22 +70,12 @@
   var minPrice = 0;
   var maxPrice = 1000000;
   function housingTypeChange(e) {
-    switch (e ? e.currentTarget.value : 'flat') {
-      case 'bungalo':
-        minPrice = 0;
-        break;
-      case 'flat':
-        minPrice = 1000;
-        break;
-      case 'house':
-        minPrice = 5000;
-        break;
-      case 'palace':
-        minPrice = 10000;
-        break;
-    }
-
-    priceField.placeholder = minPrice;
+    priceField.placeholder = ({
+      bungalo: 0,
+      flat: 1000,
+      house: 5000,
+      palace: 10000
+    })[e ? e.currentTarget.value : 'flat'];
   }
 
   housingRoomsField.addEventListener('change', roomChange);

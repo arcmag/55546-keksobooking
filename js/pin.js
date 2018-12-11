@@ -104,7 +104,7 @@
     }
 
     setMainPinCoordinate(x, y);
-    window.form.outputPinCoordinate((x + mainPinDataSize.width / 2) + ', ' + (y + mainPinDataSize.height));
+    window.form.outputPinCoordinate(Math.round(x + mainPinDataSize.width / 2) + ', ' + (y + mainPinDataSize.height));
   }
 
   function mousePinUp() {
@@ -112,7 +112,7 @@
     document.removeEventListener('mouseup', mousePinUp);
 
     var coord = getMainPinCoordinate();
-    window.form.outputPinCoordinate((coord.x + mainPinDataSize.width / 2) + ', ' + (coord.y + mainPinDataSize.height));
+    window.form.outputPinCoordinate(Math.round(coord.x + mainPinDataSize.width / 2) + ', ' + (coord.y + mainPinDataSize.height));
   }
 
   function setMainPinCoordinate(x, y) {

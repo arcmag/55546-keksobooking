@@ -31,7 +31,6 @@
     var sentence = window.main.sentenceList[indexPin];
     var cardTmp = document.querySelector('#card');
     var card = cardTmp.content.querySelector('.map__card').cloneNode(true);
-    var sentenceOfferType = '';
 
     card.setAttribute('data-index-pin-card', indexPin);
 
@@ -39,24 +38,12 @@
     card.querySelector('.popup__text--address').textContent = sentence.offer.address;
     card.querySelector('.popup__text--price').textContent = sentence.offer.price + 'Р/ночь';
 
-    switch (sentence.offer.type) {
-      case 'palace':
-        sentenceOfferType = 'Дворец';
-        break;
-      case 'flat':
-        sentenceOfferType = 'Квартира';
-        break;
-      case 'house':
-        sentenceOfferType = 'Дом';
-        break;
-      case 'bungalo':
-        sentenceOfferType = 'Бунгало';
-        break;
-      default:
-        sentenceOfferType = 'Неизвестно';
-    }
-
-    card.querySelector('.popup__type').textContent = sentenceOfferType;
+    card.querySelector('.popup__type').textContent = ({
+      palace: 'Дворец',
+      flat: 'Квартира',
+      house: 'Дом',
+      bungalo: 'Бунгало'
+    })[sentence.offer.type] || 'Неизвестно';
 
     card.querySelector('.popup__text--capacity').textContent = sentence.offer.rooms + ' комнаты для ' + sentence.offer.guests + ' гостей';
     card.querySelector('.popup__text--time').textContent = 'Заезд после ' + sentence.offer.checkin + ', выезд до ' + sentence.offer.checkout;
