@@ -23,6 +23,22 @@
   var btnSubmit = document.querySelector('.ad-form__submit');
   var btnReset = document.querySelector('.ad-form__reset');
 
+  var selectTimein = document.querySelector('#timein');
+  var selectTimeout = document.querySelector('#timeout');
+
+  selectTimein.addEventListener('change', syncSelectsTime);
+  selectTimeout.addEventListener('change', syncSelectsTime);
+
+  function syncSelectsTime(e) {
+    var elem = e.currentTarget;
+
+    if (elem === selectTimein) {
+      selectTimeout.value = elem.value;
+    } else {
+      selectTimein.value = elem.value;
+    }
+  }
+
   function disabledFormFields(status) {
     for (var i = 0; i < fieldsetsForm.length; i++) {
       fieldsetsForm[i].disabled = status;
@@ -70,7 +86,7 @@
   var minPrice = 0;
   var maxPrice = 1000000;
   function housingTypeChange(e) {
-    priceField.placeholder = ({
+    priceField.placeholder = minPrice = ({
       bungalo: 0,
       flat: 1000,
       house: 5000,
@@ -93,7 +109,7 @@
     var textError = '';
 
     if (titleField.value.length < 30 || titleField.value.length > 100) {
-      textError = 'Минимальная длинна заголовка должна быть 30 символов, но не превышать 10 символов!';
+      textError = 'Минимальная длинна заголовка должна быть 30 символов, но не превышать 100 символов!';
     }
 
     var currentPrice = +priceField.value;
