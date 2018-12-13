@@ -3,6 +3,7 @@
 (function () {
   function dataSave() {
     window.main.createMessage('Данные успешно отправлены на сервер!', 'success');
+    addressField.disabled = true;
   }
 
   function dataError() {
@@ -122,6 +123,7 @@
       return;
     }
 
+    addressField.disabled = false;
     window.backend.save(new FormData(adForm), dataSave, dataError);
     formReset();
   });
