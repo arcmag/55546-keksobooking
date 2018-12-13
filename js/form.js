@@ -3,7 +3,6 @@
 (function () {
   function dataSave() {
     window.main.createMessage('Данные успешно отправлены на сервер!', 'success');
-    addressField.disabled = true;
   }
 
   function dataError() {
@@ -98,7 +97,6 @@
   housingRoomsField.addEventListener('change', roomChange);
   housingType.addEventListener('change', housingTypeChange);
 
-  addressField.disabled = true;
   function outputPinCoordinate(address) {
     addressField.value = address;
   }
@@ -123,7 +121,6 @@
       return;
     }
 
-    addressField.disabled = false;
     window.backend.save(new FormData(adForm), dataSave, dataError);
     formReset();
   });
