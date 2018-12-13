@@ -23,6 +23,69 @@
   var btnSubmit = document.querySelector('.ad-form__submit');
   var btnReset = document.querySelector('.ad-form__reset');
 
+  var filterHousingType = document.querySelector('#housing-type');
+  var filterPrice = document.querySelector('#housing-price');
+  var filterRooms = document.querySelector('#housing-rooms');
+  var filterGuests = document.querySelector('#housing-guests');
+  var filterFeatures = document.querySelector('#housing-features');
+  var filterFeaturesList = filterFeatures.querySelectorAll('input');
+
+  filterHousingType.addEventListener('change', filterData);
+  filterPrice.addEventListener('change', filterData);
+  filterRooms.addEventListener('change', filterData);
+  filterGuests.addEventListener('change', filterData);
+  filterFeatures.addEventListener('change', filterData);
+
+  var filteredArr = [];
+  var debounceTimer = null;
+  var DEBOUNCE_INTERVAL = 500;
+  function filterData() {
+    window.card.closeMapCard();
+
+    if (debounceTimer) {
+      clearTimeout(debounceTimer);
+    }
+
+    debounceTimer = setTimeout(function() {
+      var featuresList = [];
+      for (var i = 0; i < filterFeaturesList.length; i++) {
+        if (filterFeaturesList[i].checked) {
+          featuresList.push(filterFeaturesList[i].value);
+        }
+      }
+
+      var filteredArr = window.main.sentenceList.filter(function (e) {
+        return e.offer.type === filterHousingType.value || filterHousingType.value === 'any';
+      }).filter(function(e) {
+        var price = e.offer.price;
+        var status = false;
+
+        if (filterPrice.value === 'any') {
+          status = true;
+        } else if (filterPrice.value === 'low' && price < 10000) {
+          status = true;
+        } else if (filterPrice.value === 'middle' && (price >= 10000 && price <= 50000)) {
+          status = true;
+        } else if (filterPrice.value === 'high' && price > 50000) {
+          status = true;
+        }
+
+        return status;
+      }).filter(function(e) {
+        return e.offer.rooms === +filterRooms.value || filterRooms.value === 'any';
+      }).filter(function(e) {
+        return e.offer.guests === +filterGuests.value || filterGuests.value === 'any';
+      }).filter(function(e) {
+        return featuresList.every(function (ell) {
+          return e.offer.features.indexOf(ell) !== -1;
+        });
+      });
+
+      window.pin.destroyMapPins();
+      window.pin.outputMapPins(filteredArr);
+    }, DEBOUNCE_INTERVAL);
+  }
+
   var selectTimein = document.querySelector('#timein');
   var selectTimeout = document.querySelector('#timeout');
 

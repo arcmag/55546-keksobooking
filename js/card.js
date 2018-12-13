@@ -13,6 +13,11 @@
 
   function closeMapCard() {
     var mapCard = getOpenMapCard();
+
+    if (!mapCard) {
+      return;
+    }
+
     mapCard.parentElement.removeChild(mapCard);
     document.removeEventListener('keyup', closeEscMapCard);
   }
@@ -28,7 +33,7 @@
       closeMapCard();
     }
 
-    var sentence = window.main.sentenceList[indexPin];
+    var sentence = window.pin.getCurrentSentenceList()[indexPin];
     var cardTmp = document.querySelector('#card');
     var card = cardTmp.content.querySelector('.map__card').cloneNode(true);
 
@@ -69,6 +74,7 @@
   }
 
   window.card = {
-    outputMapCard: outputMapCard
+    outputMapCard: outputMapCard,
+    closeMapCard: closeMapCard
   };
 }());
