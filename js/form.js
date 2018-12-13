@@ -36,17 +36,12 @@
   filterGuests.addEventListener('change', filterData);
   filterFeatures.addEventListener('change', filterData);
 
-  var filteredArr = [];
   var debounceTimer = null;
   var DEBOUNCE_INTERVAL = 500;
   function filterData() {
     window.card.closeMapCard();
 
-    if (debounceTimer) {
-      clearTimeout(debounceTimer);
-    }
-
-    debounceTimer = setTimeout(function() {
+    var filter = function () {
       var featuresList = [];
       for (var i = 0; i < filterFeaturesList.length; i++) {
         if (filterFeaturesList[i].checked) {
@@ -56,7 +51,7 @@
 
       var filteredArr = window.main.sentenceList.filter(function (e) {
         return e.offer.type === filterHousingType.value || filterHousingType.value === 'any';
-      }).filter(function(e) {
+      }).filter(function (e) {
         var price = e.offer.price;
         var status = false;
 
@@ -71,11 +66,11 @@
         }
 
         return status;
-      }).filter(function(e) {
+      }).filter(function (e) {
         return e.offer.rooms === +filterRooms.value || filterRooms.value === 'any';
-      }).filter(function(e) {
+      }).filter(function (e) {
         return e.offer.guests === +filterGuests.value || filterGuests.value === 'any';
-      }).filter(function(e) {
+      }).filter(function (e) {
         return featuresList.every(function (ell) {
           return e.offer.features.indexOf(ell) !== -1;
         });
@@ -83,7 +78,13 @@
 
       window.pin.destroyMapPins();
       window.pin.outputMapPins(filteredArr);
-    }, DEBOUNCE_INTERVAL);
+    };
+
+    if (debounceTimer) {
+      clearTimeout(debounceTimer);
+    }
+
+    debounceTimer = setTimeout(filter, DEBOUNCE_INTERVAL);
   }
 
   var selectTimein = document.querySelector('#timein');
