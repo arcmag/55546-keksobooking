@@ -14,6 +14,7 @@
   };
 
   var pinElementsListHTML = [];
+  var currentSentenceList = [];
 
   function dataLoad(e) {
     outputMapPins(window.main.sentenceList = e);
@@ -21,6 +22,10 @@
 
   function dataError() {
     window.main.createMessage('Не удалось загрузить данные с сервера!', 'error');
+  }
+
+  function getCurrentSentenceList() {
+    return currentSentenceList;
   }
 
   function getMapPin(object, index) {
@@ -40,9 +45,12 @@
   }
 
   function outputMapPins(dataPins) {
+    currentSentenceList = dataPins;
     var mapPinContainer = document.createDocumentFragment();
 
-    for (var i = 0; i < dataPins.length; i++) {
+    var len = dataPins.length >= 5 ? 5 : dataPins.length;
+
+    for (var i = 0; i < len; i++) {
       var pin = getMapPin(dataPins[i], i);
       pinElementsListHTML.push(pin);
       mapPinContainer.appendChild(pin);
@@ -133,7 +141,9 @@
   }
 
   window.pin = {
+    getCurrentSentenceList: getCurrentSentenceList,
     setMainPinCoordinate: setMainPinCoordinate,
+    outputMapPins: outputMapPins,
     destroyMapPins: destroyMapPins,
   };
 }());
