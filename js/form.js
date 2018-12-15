@@ -1,6 +1,8 @@
 'use strict';
 
 (function () {
+  var DEBOUNCE_INTERVAL = 500;
+
   function dataSave() {
     window.main.createMessage('Данные успешно отправлены на сервер!', 'success');
   }
@@ -37,11 +39,19 @@
   filterFeatures.addEventListener('change', filterData);
 
   var debounceTimer = null;
-  var DEBOUNCE_INTERVAL = 500;
+
+  window.photoLoad.loadFile('#avatar', '.ad-form-header__preview img');
+  window.photoLoad.loadFile('#images', '.ad-form__photo', function (fileBlock, previewBlock, result) {
+    var img = document.createElement('img');
+    img.src = result;
+
+    previewBlock.appendChild(img);
+  });
+
   function filterData() {
     window.card.closeMapCard();
 
-    var filter = function () {
+    function filter() {
       var featuresList = [];
       for (var i = 0; i < filterFeaturesList.length; i++) {
         if (filterFeaturesList[i].checked) {
@@ -78,7 +88,7 @@
 
       window.pin.destroyMapPins();
       window.pin.outputMapPins(filteredArr);
-    };
+    }
 
     if (debounceTimer) {
       clearTimeout(debounceTimer);
@@ -93,8 +103,8 @@
   selectTimein.addEventListener('change', syncSelectsTime);
   selectTimeout.addEventListener('change', syncSelectsTime);
 
-  function syncSelectsTime(e) {
-    var elem = e.currentTarget;
+  function syncSelectsTime(evt) {
+    var elem = evt.currentTarget;
 
     if (elem === selectTimein) {
       selectTimeout.value = elem.value;
@@ -117,7 +127,7 @@
     window.main.disabledPage();
   }
 
-  function roomChange(e) {
+  function roomChange(evt) {
     var optionList = [
       {value: 3, text: 'для 3 гостей'},
       {value: 2, text: 'для 2 гостей'},
@@ -130,7 +140,7 @@
       '2': [1, 2],
       '3': [0, 1, 2],
       '100': [3]
-    })[e ? +e.currentTarget.value : 1] || [];
+    })[evt ? +evt.currentTarget.value : 1] || [];
 
     var container = document.createDocumentFragment();
     for (var i = 0; i < openedOptionsList.length; i++) {
@@ -149,13 +159,13 @@
 
   var minPrice = 0;
   var maxPrice = 1000000;
-  function housingTypeChange(e) {
+  function housingTypeChange(evt) {
     priceField.placeholder = minPrice = ({
       bungalo: 0,
       flat: 1000,
       house: 5000,
       palace: 10000
-    })[e ? e.currentTarget.value : 'flat'];
+    })[evt ? evt.currentTarget.value : 'flat'];
   }
 
   housingRoomsField.addEventListener('change', roomChange);
@@ -166,8 +176,8 @@
   }
 
   btnReset.addEventListener('click', formReset);
-  btnSubmit.addEventListener('click', function (e) {
-    e.preventDefault();
+  btnSubmit.addEventListener('click', function (evt) {
+    evt.preventDefault();
 
     var textError = '';
 

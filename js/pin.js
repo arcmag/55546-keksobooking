@@ -1,6 +1,9 @@
 'use strict';
 
 (function () {
+  var MAX_PIN_TOP = 630;
+  var MIN_PIN_TOP = 130;
+
   var mapCardTmp = document.querySelector('#pin');
   var mapPins = document.querySelector('.map__pins');
   var mapPinTmp = mapCardTmp.content.querySelector('.map__pin');
@@ -16,8 +19,9 @@
   var pinElementsListHTML = [];
   var currentSentenceList = [];
 
-  function dataLoad(e) {
-    outputMapPins(window.main.sentenceList = e);
+  function dataLoad(evt) {
+    window.main.sentenceList = evt;
+    outputMapPins(window.main.sentenceList);
   }
 
   function dataError() {
@@ -37,7 +41,7 @@
     pin.style.left = object.location.x + 'px';
     pin.style.top = object.location.y + 'px';
 
-    pin.setAttribute('data-index-pin', index);
+    pin.dataset.indexPin = index;
 
     pin.addEventListener('click', window.card.outputMapCard);
 
@@ -71,11 +75,8 @@
   var mapBlockDataSize = window.main.mapBlock.getBoundingClientRect();
   var dataDragMainPin = {};
 
-  var MAX_PIN_TOP = 630;
-  var MIN_PIN_TOP = 130;
-
   mapPinMain.addEventListener('mousedown', mousePinDown);
-  function mousePinDown(e) {
+  function mousePinDown(evt) {
     if (window.main.mapBlock.classList.contains('map--faded')) {
       window.main.openedPage();
       window.form.disabledFormFields(false);
@@ -87,17 +88,17 @@
     }
 
     dataDragMainPin = {
-      x: e.clientX - mapPinMain.offsetLeft,
-      y: e.clientY - mapPinMain.offsetTop
+      x: evt.clientX - mapPinMain.offsetLeft,
+      y: evt.clientY - mapPinMain.offsetTop
     };
 
     document.addEventListener('mousemove', mousePinMove);
     document.addEventListener('mouseup', mousePinUp);
   }
 
-  function mousePinMove(e) {
-    var x = e.clientX - dataDragMainPin.x;
-    var y = e.clientY - dataDragMainPin.y;
+  function mousePinMove(evt) {
+    var x = evt.clientX - dataDragMainPin.x;
+    var y = evt.clientY - dataDragMainPin.y;
 
     if (x >= mapBlockDataSize.width - mainPinDataSize.width) {
       x = mapBlockDataSize.width - mainPinDataSize.width;

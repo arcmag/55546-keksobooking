@@ -21,10 +21,10 @@
 
     document.querySelector('main').appendChild(messageBlock);
 
-    function destroyBlock(e) {
-      var elem = e.target;
+    function destroyBlock(evt) {
+      var elem = evt.target;
 
-      if (elem.classList.contains(status) || elem.classList.contains(status + '__button') || e.keyCode === window.main.ESC_KEYCODE) {
+      if (elem.classList.contains(status) || elem.classList.contains(status + '__button') || evt.keyCode === window.main.ESC_KEYCODE) {
         document.removeEventListener('click', destroyBlock);
         document.removeEventListener('keyup', destroyBlock);
 

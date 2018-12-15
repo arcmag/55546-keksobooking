@@ -1,8 +1,8 @@
 'use strict';
 
 (function () {
-  function closeEscMapCard(e) {
-    if (e.keyCode === window.main.ESC_KEYCODE && getOpenMapCard()) {
+  function closeEscMapCard(evt) {
+    if (evt.keyCode === window.main.ESC_KEYCODE && getOpenMapCard()) {
       closeMapCard();
     }
   }
@@ -22,8 +22,8 @@
     document.removeEventListener('keyup', closeEscMapCard);
   }
 
-  function outputMapCard(e) {
-    var indexPin = +e.currentTarget.dataset['indexPin'];
+  function outputMapCard(evt) {
+    var indexPin = +evt.currentTarget.dataset['indexPin'];
     var mapCard = getOpenMapCard();
 
     if (mapCard) {
@@ -37,7 +37,7 @@
     var cardTmp = document.querySelector('#card');
     var card = cardTmp.content.querySelector('.map__card').cloneNode(true);
 
-    card.setAttribute('data-index-pin-card', indexPin);
+    card.dataset.indexPinCard = indexPin;
 
     card.querySelector('.popup__title').textContent = sentence.offer.title;
     card.querySelector('.popup__text--address').textContent = sentence.offer.address;
