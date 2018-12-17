@@ -43,7 +43,7 @@
 
     pin.dataset.indexPin = index;
 
-    pin.addEventListener('click', window.card.outputMapCard);
+    pin.addEventListener('click', window.card.onOutputMapCard);
 
     return pin;
   }
@@ -92,11 +92,11 @@
       y: evt.clientY - mapPinMain.offsetTop
     };
 
-    document.addEventListener('mousemove', mousePinMove);
-    document.addEventListener('mouseup', mousePinUp);
+    document.addEventListener('mousemove', onMousePinMove);
+    document.addEventListener('mouseup', onMousePinUp);
   }
 
-  function mousePinMove(evt) {
+  function onMousePinMove(evt) {
     var x = evt.clientX - dataDragMainPin.x;
     var y = evt.clientY - dataDragMainPin.y;
 
@@ -116,9 +116,9 @@
     window.form.outputPinCoordinate(Math.round(x + mainPinDataSize.width / 2) + ', ' + (y + mainPinDataSize.height));
   }
 
-  function mousePinUp() {
-    document.removeEventListener('mousemove', mousePinMove);
-    document.removeEventListener('mouseup', mousePinUp);
+  function onMousePinUp() {
+    document.removeEventListener('mousemove', onMousePinMove);
+    document.removeEventListener('mouseup', onMousePinUp);
 
     var coord = getMainPinCoordinate();
     window.form.outputPinCoordinate(Math.round(coord.x + mainPinDataSize.width / 2) + ', ' + (coord.y + mainPinDataSize.height));

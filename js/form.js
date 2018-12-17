@@ -32,11 +32,11 @@
   var filterFeatures = document.querySelector('#housing-features');
   var filterFeaturesList = filterFeatures.querySelectorAll('input');
 
-  filterHousingType.addEventListener('change', filterData);
-  filterPrice.addEventListener('change', filterData);
-  filterRooms.addEventListener('change', filterData);
-  filterGuests.addEventListener('change', filterData);
-  filterFeatures.addEventListener('change', filterData);
+  filterHousingType.addEventListener('change', onFilterData);
+  filterPrice.addEventListener('change', onFilterData);
+  filterRooms.addEventListener('change', onFilterData);
+  filterGuests.addEventListener('change', onFilterData);
+  filterFeatures.addEventListener('change', onFilterData);
 
   var debounceTimer = null;
 
@@ -48,8 +48,8 @@
     previewBlock.appendChild(img);
   });
 
-  function filterData() {
-    window.card.closeMapCard();
+  function onFilterData() {
+    window.card.onCloseMapCard();
 
     function filter() {
       var featuresList = [];
@@ -100,10 +100,10 @@
   var selectTimein = document.querySelector('#timein');
   var selectTimeout = document.querySelector('#timeout');
 
-  selectTimein.addEventListener('change', syncSelectsTime);
-  selectTimeout.addEventListener('change', syncSelectsTime);
+  selectTimein.addEventListener('change', onSyncSelectsTime);
+  selectTimeout.addEventListener('change', onSyncSelectsTime);
 
-  function syncSelectsTime(evt) {
+  function onSyncSelectsTime(evt) {
     var elem = evt.currentTarget;
 
     if (elem === selectTimein) {
@@ -119,7 +119,7 @@
     }
   }
 
-  function formReset() {
+  function onFormReset() {
     window.pin.setMainPinCoordinate();
     window.pin.destroyMapPins();
     adForm.reset();
@@ -127,7 +127,7 @@
     window.main.disabledPage();
   }
 
-  function roomChange(evt) {
+  function onRoomChange(evt) {
     var optionList = [
       {value: 3, text: 'для 3 гостей'},
       {value: 2, text: 'для 2 гостей'},
@@ -159,7 +159,7 @@
 
   var minPrice = 0;
   var maxPrice = 1000000;
-  function housingTypeChange(evt) {
+  function onHousingTypeChange(evt) {
     priceField.placeholder = minPrice = ({
       bungalo: 0,
       flat: 1000,
@@ -168,14 +168,14 @@
     })[evt ? evt.currentTarget.value : 'flat'];
   }
 
-  housingRoomsField.addEventListener('change', roomChange);
-  housingType.addEventListener('change', housingTypeChange);
+  housingRoomsField.addEventListener('change', onRoomChange);
+  housingType.addEventListener('change', onHousingTypeChange);
 
   function outputPinCoordinate(address) {
     addressField.value = address;
   }
 
-  btnReset.addEventListener('click', formReset);
+  btnReset.addEventListener('click', onFormReset);
   btnSubmit.addEventListener('click', function (evt) {
     evt.preventDefault();
 
@@ -196,11 +196,11 @@
     }
 
     window.backend.save(new FormData(adForm), dataSave, dataError);
-    formReset();
+    onFormReset();
   });
 
-  roomChange();
-  housingTypeChange();
+  onRoomChange();
+  onHousingTypeChange();
   disabledFormFields(true);
 
   window.form = {

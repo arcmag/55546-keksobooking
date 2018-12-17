@@ -16,28 +16,28 @@
 
     if (status === 'error') {
       messageBlockButton = messageBlock.querySelector('.error__button');
-      messageBlockButton.addEventListener('click', destroyBlock);
+      messageBlockButton.addEventListener('click', onDestroyBlock);
     }
 
     document.querySelector('main').appendChild(messageBlock);
 
-    function destroyBlock(evt) {
+    function onDestroyBlock(evt) {
       var elem = evt.target;
 
       if (elem.classList.contains(status) || elem.classList.contains(status + '__button') || evt.keyCode === window.main.ESC_KEYCODE) {
-        document.removeEventListener('click', destroyBlock);
-        document.removeEventListener('keyup', destroyBlock);
+        document.removeEventListener('click', onDestroyBlock);
+        document.removeEventListener('keyup', onDestroyBlock);
 
         if (messageBlockButton) {
-          messageBlockButton.removeEventListener('click', destroyBlock);
+          messageBlockButton.removeEventListener('click', onDestroyBlock);
         }
 
         messageBlock.parentElement.removeChild(messageBlock);
       }
     }
 
-    document.addEventListener('click', destroyBlock);
-    document.addEventListener('keyup', destroyBlock);
+    document.addEventListener('click', onDestroyBlock);
+    document.addEventListener('keyup', onDestroyBlock);
   }
 
   function openedPage() {

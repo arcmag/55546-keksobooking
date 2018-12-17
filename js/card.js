@@ -1,9 +1,9 @@
 'use strict';
 
 (function () {
-  function closeEscMapCard(evt) {
+  function onCloseEscMapCard(evt) {
     if (evt.keyCode === window.main.ESC_KEYCODE && getOpenMapCard()) {
-      closeMapCard();
+      onCloseMapCard();
     }
   }
 
@@ -11,7 +11,7 @@
     return document.querySelector('.map__card') || false;
   }
 
-  function closeMapCard() {
+  function onCloseMapCard() {
     var mapCard = getOpenMapCard();
 
     if (!mapCard) {
@@ -19,10 +19,10 @@
     }
 
     mapCard.parentElement.removeChild(mapCard);
-    document.removeEventListener('keyup', closeEscMapCard);
+    document.removeEventListener('keyup', onCloseEscMapCard);
   }
 
-  function outputMapCard(evt) {
+  function onOutputMapCard(evt) {
     var indexPin = +evt.currentTarget.dataset['indexPin'];
     var mapCard = getOpenMapCard();
 
@@ -30,7 +30,7 @@
       if (+mapCard.dataset['indexPinCard'] === indexPin) {
         return;
       }
-      closeMapCard();
+      onCloseMapCard();
     }
 
     var sentence = window.pin.getCurrentSentenceList()[indexPin];
@@ -67,14 +67,14 @@
 
     card.querySelector('.popup__avatar').src = sentence.author.avatar;
 
-    card.querySelector('.popup__close').addEventListener('click', closeMapCard);
-    document.addEventListener('keyup', closeEscMapCard);
+    card.querySelector('.popup__close').addEventListener('click', onCloseMapCard);
+    document.addEventListener('keyup', onCloseEscMapCard);
 
     window.main.mapBlock.insertBefore(card, document.querySelector('.map__filters-container'));
   }
 
   window.card = {
-    outputMapCard: outputMapCard,
-    closeMapCard: closeMapCard
+    onOutputMapCard: onOutputMapCard,
+    onCloseMapCard: onCloseMapCard
   };
 }());
