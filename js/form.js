@@ -3,13 +3,13 @@
 (function () {
   var DEBOUNCE_INTERVAL = 500;
 
-  function dataSave() {
-    window.main.createMessage('Данные успешно отправлены на сервер!', 'success');
-  }
+  var LOW_PRICE = 10000;
+  var HIGH_PRICE = 50000;
 
-  function dataError() {
-    window.main.createMessage('Не удалось сохранить данные на сервер!', 'error');
-  }
+  var MIN_TITLE_LENGTH = 30;
+  var MAX_TITLE_LENGTH = 100;
+
+  var MAX_AVAILABLE_PRICE = 1000000;
 
   var adForm = document.querySelector('.ad-form');
   var fieldsetsForm = adForm.querySelectorAll('fieldset');
@@ -32,24 +32,23 @@
   var filterFeatures = document.querySelector('#housing-features');
   var filterFeaturesList = filterFeatures.querySelectorAll('input');
 
-  filterHousingType.addEventListener('change', onFilterData);
-  filterPrice.addEventListener('change', onFilterData);
-  filterRooms.addEventListener('change', onFilterData);
-  filterGuests.addEventListener('change', onFilterData);
-  filterFeatures.addEventListener('change', onFilterData);
+  filterHousingType.addEventListener('change', onFormFilterChange);
+  filterPrice.addEventListener('change', onFormFilterChange);
+  filterRooms.addEventListener('change', onFormFilterChange);
+  filterGuests.addEventListener('change', onFormFilterChange);
+  filterFeatures.addEventListener('change', onFormFilterChange);
+
+  function dataSave() {
+    window.main.createMessage('Данные успешно отправлены на сервер!', 'success');
+  }
+
+  function dataError() {
+    window.main.createMessage('Не удалось сохранить данные на сервер!', 'error');
+  }
 
   var debounceTimer = null;
-
-  window.photoLoad.loadFile('#avatar', '.ad-form-header__preview img');
-  window.photoLoad.loadFile('#images', '.ad-form__photo', function (fileBlock, previewBlock, result) {
-    var img = document.createElement('img');
-    img.src = result;
-
-    previewBlock.appendChild(img);
-  });
-
-  function onFilterData() {
-    window.card.onCloseMapCard();
+  function onFormFilterChange() {
+    window.card.onCardCloseClick();
 
     function filter() {
       var featuresList = [];
@@ -67,11 +66,11 @@
 
         if (filterPrice.value === 'any') {
           status = true;
-        } else if (filterPrice.value === 'low' && price < 10000) {
+        } else if (filterPrice.value === 'low' && price < LOW_PRICE) {
           status = true;
-        } else if (filterPrice.value === 'middle' && (price >= 10000 && price <= 50000)) {
+        } else if (filterPrice.value === 'middle' && (price >= LOW_PRICE && price <= HIGH_PRICE)) {
           status = true;
-        } else if (filterPrice.value === 'high' && price > 50000) {
+        } else if (filterPrice.value === 'high' && price > HIGH_PRICE) {
           status = true;
         }
 
@@ -100,10 +99,9 @@
   var selectTimein = document.querySelector('#timein');
   var selectTimeout = document.querySelector('#timeout');
 
-  selectTimein.addEventListener('change', onSyncSelectsTime);
-  selectTimeout.addEventListener('change', onSyncSelectsTime);
-
-  function onSyncSelectsTime(evt) {
+  selectTimein.addEventListener('change', onSelectTimeSyncChange);
+  selectTimeout.addEventListener('change', onSelectTimeSyncChange);
+  function onSelectTimeSyncChange(evt) {
     var elem = evt.currentTarget;
 
     if (elem === selectTimein) {
@@ -119,7 +117,7 @@
     }
   }
 
-  function onFormReset() {
+  function onFormResetClick() {
     window.pin.setMainPinCoordinate();
     window.pin.destroyMapPins();
     adForm.reset();
@@ -127,7 +125,7 @@
     window.main.disabledPage();
   }
 
-  function onRoomChange(evt) {
+  function onSelectRoomChange(evt) {
     var optionList = [
       {value: 3, text: 'для 3 гостей'},
       {value: 2, text: 'для 2 гостей'},
@@ -143,24 +141,24 @@
     })[evt ? +evt.currentTarget.value : 1] || [];
 
     var container = document.createDocumentFragment();
-    for (var i = 0; i < openedOptionsList.length; i++) {
-      var data = optionList[openedOptionsList[i]];
+    openedOptionsList.forEach(function (item) {
+      var data = optionList[item];
       var option = document.createElement('option');
 
       option.value = data.value;
       option.textContent = data.text;
 
       container.appendChild(option);
-    }
+    });
+
 
     housingCapacityField.innerHTML = '';
     housingCapacityField.appendChild(container);
   }
 
-  var minPrice = 0;
-  var maxPrice = 1000000;
-  function onHousingTypeChange(evt) {
-    priceField.placeholder = minPrice = ({
+  var minAvailablePrice = 0;
+  function onSelectHousingTypeChange(evt) {
+    priceField.placeholder = minAvailablePrice = ({
       bungalo: 0,
       flat: 1000,
       house: 5000,
@@ -168,26 +166,27 @@
     })[evt ? evt.currentTarget.value : 'flat'];
   }
 
-  housingRoomsField.addEventListener('change', onRoomChange);
-  housingType.addEventListener('change', onHousingTypeChange);
+  housingRoomsField.addEventListener('change', onSelectRoomChange);
+  housingType.addEventListener('change', onSelectHousingTypeChange);
 
   function outputPinCoordinate(address) {
     addressField.value = address;
   }
 
-  btnReset.addEventListener('click', onFormReset);
+  btnReset.addEventListener('click', onFormResetClick);
   btnSubmit.addEventListener('click', function (evt) {
     evt.preventDefault();
 
+    var titleText = titleField.value.trim();
     var textError = '';
 
-    if (titleField.value.length < 30 || titleField.value.length > 100) {
+    if (titleText.length < MIN_TITLE_LENGTH || titleText.length > MAX_TITLE_LENGTH) {
       textError = 'Минимальная длинна заголовка должна быть 30 символов, но не превышать 100 символов!';
     }
 
     var currentPrice = +priceField.value;
-    if (currentPrice < minPrice || currentPrice > maxPrice || !currentPrice) {
-      textError = 'Минимальная допустимая цена для данного типа жилья ' + minPrice + ', а максимальная ' + maxPrice + '!';
+    if (currentPrice < minAvailablePrice || currentPrice > MAX_AVAILABLE_PRICE || !currentPrice) {
+      textError = 'Минимальная допустимая цена для данного типа жилья ' + minAvailablePrice + ', а максимальная ' + MAX_AVAILABLE_PRICE + '!';
     }
 
     if (textError) {
@@ -196,11 +195,11 @@
     }
 
     window.backend.save(new FormData(adForm), dataSave, dataError);
-    onFormReset();
+    onFormResetClick();
   });
 
-  onRoomChange();
-  onHousingTypeChange();
+  onSelectRoomChange();
+  onSelectHousingTypeChange();
   disabledFormFields(true);
 
   window.form = {

@@ -1,9 +1,9 @@
 'use strict';
 
 (function () {
-  function onCloseEscMapCard(evt) {
+  function onDocumentCardCloseKeyup(evt) {
     if (evt.keyCode === window.main.ESC_KEYCODE && getOpenMapCard()) {
-      onCloseMapCard();
+      onCardCloseClick();
     }
   }
 
@@ -11,7 +11,7 @@
     return document.querySelector('.map__card') || false;
   }
 
-  function onCloseMapCard() {
+  function onCardCloseClick() {
     var mapCard = getOpenMapCard();
 
     if (!mapCard) {
@@ -19,10 +19,10 @@
     }
 
     mapCard.parentElement.removeChild(mapCard);
-    document.removeEventListener('keyup', onCloseEscMapCard);
+    document.removeEventListener('keyup', onDocumentCardCloseKeyup);
   }
 
-  function onOutputMapCard(evt) {
+  function onCardOutputClick(evt) {
     var indexPin = +evt.currentTarget.dataset['indexPin'];
     var mapCard = getOpenMapCard();
 
@@ -30,7 +30,7 @@
       if (+mapCard.dataset['indexPinCard'] === indexPin) {
         return;
       }
-      onCloseMapCard();
+      onCardCloseClick();
     }
 
     var sentence = window.pin.getCurrentSentenceList()[indexPin];
@@ -59,22 +59,22 @@
     var photoCardTmp = photosCardBlock.querySelector('.popup__photo').cloneNode(true);
     photosCardBlock.innerHTML = '';
 
-    for (var i = 0; i < sentence.offer.photos.length; i++) {
+    sentence.offer.photos.forEach(function (photo) {
       var cardImg = photoCardTmp.cloneNode(true);
-      cardImg.src = sentence.offer.photos[i];
+      cardImg.src = photo;
       photosCardBlock.appendChild(cardImg);
-    }
+    });
 
     card.querySelector('.popup__avatar').src = sentence.author.avatar;
 
-    card.querySelector('.popup__close').addEventListener('click', onCloseMapCard);
-    document.addEventListener('keyup', onCloseEscMapCard);
+    card.querySelector('.popup__close').addEventListener('click', onCardCloseClick);
+    document.addEventListener('keyup', onDocumentCardCloseKeyup);
 
     window.main.mapBlock.insertBefore(card, document.querySelector('.map__filters-container'));
   }
 
   window.card = {
-    onOutputMapCard: onOutputMapCard,
-    onCloseMapCard: onCloseMapCard
+    onCardOutputClick: onCardOutputClick,
+    onCardCloseClick: onCardCloseClick
   };
 }());

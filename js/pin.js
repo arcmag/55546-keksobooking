@@ -1,13 +1,6 @@
 'use strict';
 
 (function () {
-  var MAX_PIN_TOP = 630;
-  var MIN_PIN_TOP = 130;
-
-  var mapCardTmp = document.querySelector('#pin');
-  var mapPins = document.querySelector('.map__pins');
-  var mapPinTmp = mapCardTmp.content.querySelector('.map__pin');
-
   var mapPinMain = document.querySelector('.map__pin--main');
   var mainPinDataSize = {
     left: parseInt(mapPinMain.style.left, 10),
@@ -15,6 +8,20 @@
     width: parseInt(getComputedStyle(mapPinMain).width, 10),
     height: parseInt(getComputedStyle(mapPinMain).height, 10)
   };
+
+  var mapBlockDataSize = window.main.mapBlock.getBoundingClientRect();
+
+  var MAX_NUMBER_PIN = 5;
+
+  var MAX_PIN_TOP = 630;
+  var MIN_PIN_TOP = 130;
+
+  var MAX_PIN_LEFT = mapBlockDataSize.width - mainPinDataSize.width;
+  var MIN_PIN_LEFT = 0;
+
+  var mapCardTmp = document.querySelector('#pin');
+  var mapPins = document.querySelector('.map__pins');
+  var mapPinTmp = mapCardTmp.content.querySelector('.map__pin');
 
   var pinElementsListHTML = [];
   var currentSentenceList = [];
@@ -43,7 +50,7 @@
 
     pin.dataset.indexPin = index;
 
-    pin.addEventListener('click', window.card.onOutputMapCard);
+    pin.addEventListener('click', window.card.onCardOutputClick);
 
     return pin;
   }
@@ -52,13 +59,12 @@
     currentSentenceList = dataPins;
     var mapPinContainer = document.createDocumentFragment();
 
-    var len = dataPins.length >= 5 ? 5 : dataPins.length;
-
-    for (var i = 0; i < len; i++) {
-      var pin = getMapPin(dataPins[i], i);
+    var numberPin = (dataPins.length >= MAX_NUMBER_PIN ? MAX_NUMBER_PIN : dataPins.length);
+    dataPins.slice(0, numberPin).forEach(function (dataPin, i) {
+      var pin = getMapPin(dataPin, i);
       pinElementsListHTML.push(pin);
       mapPinContainer.appendChild(pin);
-    }
+    });
 
     mapPins.appendChild(mapPinContainer);
   }
@@ -71,12 +77,9 @@
     pinElementsListHTML = [];
   }
 
-  // drag-n-drop логика для метки pin
-  var mapBlockDataSize = window.main.mapBlock.getBoundingClientRect();
   var dataDragMainPin = {};
-
-  mapPinMain.addEventListener('mousedown', mousePinDown);
-  function mousePinDown(evt) {
+  mapPinMain.addEventListener('mousedown', onPinMouseDown);
+  function onPinMouseDown(evt) {
     if (window.main.mapBlock.classList.contains('map--faded')) {
       window.main.openedPage();
       window.form.disabledFormFields(false);
@@ -92,18 +95,18 @@
       y: evt.clientY - mapPinMain.offsetTop
     };
 
-    document.addEventListener('mousemove', onMousePinMove);
-    document.addEventListener('mouseup', onMousePinUp);
+    document.addEventListener('mousemove', onPinMouseMove);
+    document.addEventListener('mouseup', onPinMouseUp);
   }
 
-  function onMousePinMove(evt) {
+  function onPinMouseMove(evt) {
     var x = evt.clientX - dataDragMainPin.x;
     var y = evt.clientY - dataDragMainPin.y;
 
-    if (x >= mapBlockDataSize.width - mainPinDataSize.width) {
-      x = mapBlockDataSize.width - mainPinDataSize.width;
-    } else if (x <= 0) {
-      x = 0;
+    if (x >= MAX_PIN_LEFT) {
+      x = MAX_PIN_LEFT;
+    } else if (x <= MIN_PIN_LEFT) {
+      x = MIN_PIN_LEFT;
     }
 
     if (y >= MAX_PIN_TOP) {
@@ -116,9 +119,9 @@
     window.form.outputPinCoordinate(Math.round(x + mainPinDataSize.width / 2) + ', ' + (y + mainPinDataSize.height));
   }
 
-  function onMousePinUp() {
-    document.removeEventListener('mousemove', onMousePinMove);
-    document.removeEventListener('mouseup', onMousePinUp);
+  function onPinMouseUp() {
+    document.removeEventListener('mousemove', onPinMouseMove);
+    document.removeEventListener('mouseup', onPinMouseUp);
 
     var coord = getMainPinCoordinate();
     window.form.outputPinCoordinate(Math.round(coord.x + mainPinDataSize.width / 2) + ', ' + (coord.y + mainPinDataSize.height));

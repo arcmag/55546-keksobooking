@@ -34,7 +34,12 @@
     });
   }
 
-  window.photoLoad = {
-    loadFile: loadFile
-  };
+  loadFile('#avatar', '.ad-form-header__preview img');
+  loadFile('#images', '.ad-form__photo', function (fileBlock, previewBlock, result) {
+    var img = document.createElement('img');
+    img.src = result;
+
+    previewBlock.appendChild(img);
+  });
+
 }());
