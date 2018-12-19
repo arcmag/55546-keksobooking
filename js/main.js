@@ -24,14 +24,14 @@
     document.addEventListener('keyup', onMessageBlockDestroyKeyUp);
 
     function destroyMessageBlock() {
-        document.removeEventListener('click', onMessageBlockDestroyClick);
-        document.removeEventListener('keyup', onMessageBlockDestroyKeyUp);
+      document.removeEventListener('click', onMessageBlockDestroyClick);
+      document.removeEventListener('keyup', onMessageBlockDestroyKeyUp);
 
-        if (messageBlockButton) {
-          messageBlockButton.removeEventListener('click', onMessageBlockDestroyClick);
-        }
+      if (messageBlockButton) {
+        messageBlockButton.removeEventListener('click', onMessageBlockDestroyClick);
+      }
 
-        messageBlock.parentElement.removeChild(messageBlock);
+      messageBlock.parentElement.removeChild(messageBlock);
     }
 
     function onMessageBlockDestroyClick(evt) {
