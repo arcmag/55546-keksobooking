@@ -181,7 +181,7 @@
     var textError = '';
 
     if (titleText.length < MIN_TITLE_LENGTH || titleText.length > MAX_TITLE_LENGTH) {
-      textError = 'Минимальная длинна заголовка должна быть 30 символов, но не превышать 100 символов!';
+      textError = 'Минимальная длинна заголовка должна быть ' + MIN_TITLE_LENGTH + ' символов, но не превышать ' + MAX_TITLE_LENGTH + ' символов!';
     }
 
     var currentPrice = +priceField.value;
