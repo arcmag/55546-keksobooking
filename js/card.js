@@ -1,9 +1,9 @@
 'use strict';
 
 (function () {
-  function closeEscMapCard(e) {
-    if (e.keyCode === window.main.ESC_KEYCODE && getOpenMapCard()) {
-      closeMapCard();
+  function onDocumentCardCloseKeyup(evt) {
+    if (evt.keyCode === window.main.ESC_KEYCODE && getOpenMapCard()) {
+      onCardCloseClick();
     }
   }
 
@@ -11,7 +11,7 @@
     return document.querySelector('.map__card') || false;
   }
 
-  function closeMapCard() {
+  function onCardCloseClick() {
     var mapCard = getOpenMapCard();
 
     if (!mapCard) {
@@ -19,25 +19,25 @@
     }
 
     mapCard.parentElement.removeChild(mapCard);
-    document.removeEventListener('keyup', closeEscMapCard);
+    document.removeEventListener('keyup', onDocumentCardCloseKeyup);
   }
 
-  function outputMapCard(e) {
-    var indexPin = +e.currentTarget.dataset['indexPin'];
+  function onCardOutputClick(evt) {
+    var indexPin = +evt.currentTarget.dataset['indexPin'];
     var mapCard = getOpenMapCard();
 
     if (mapCard) {
       if (+mapCard.dataset['indexPinCard'] === indexPin) {
         return;
       }
-      closeMapCard();
+      onCardCloseClick();
     }
 
     var sentence = window.pin.getCurrentSentenceList()[indexPin];
     var cardTmp = document.querySelector('#card');
     var card = cardTmp.content.querySelector('.map__card').cloneNode(true);
 
-    card.setAttribute('data-index-pin-card', indexPin);
+    card.dataset.indexPinCard = indexPin;
 
     card.querySelector('.popup__title').textContent = sentence.offer.title;
     card.querySelector('.popup__text--address').textContent = sentence.offer.address;
@@ -59,22 +59,22 @@
     var photoCardTmp = photosCardBlock.querySelector('.popup__photo').cloneNode(true);
     photosCardBlock.innerHTML = '';
 
-    for (var i = 0; i < sentence.offer.photos.length; i++) {
+    sentence.offer.photos.forEach(function (photo) {
       var cardImg = photoCardTmp.cloneNode(true);
-      cardImg.src = sentence.offer.photos[i];
+      cardImg.src = photo;
       photosCardBlock.appendChild(cardImg);
-    }
+    });
 
     card.querySelector('.popup__avatar').src = sentence.author.avatar;
 
-    card.querySelector('.popup__close').addEventListener('click', closeMapCard);
-    document.addEventListener('keyup', closeEscMapCard);
+    card.querySelector('.popup__close').addEventListener('click', onCardCloseClick);
+    document.addEventListener('keyup', onDocumentCardCloseKeyup);
 
     window.main.mapBlock.insertBefore(card, document.querySelector('.map__filters-container'));
   }
 
   window.card = {
-    outputMapCard: outputMapCard,
-    closeMapCard: closeMapCard
+    onCardOutputClick: onCardOutputClick,
+    onCardCloseClick: onCardCloseClick
   };
 }());

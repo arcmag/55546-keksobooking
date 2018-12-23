@@ -1,10 +1,6 @@
 'use strict';
 
 (function () {
-  var mapCardTmp = document.querySelector('#pin');
-  var mapPins = document.querySelector('.map__pins');
-  var mapPinTmp = mapCardTmp.content.querySelector('.map__pin');
-
   var mapPinMain = document.querySelector('.map__pin--main');
   var mainPinDataSize = {
     left: parseInt(mapPinMain.style.left, 10),
@@ -13,11 +9,26 @@
     height: parseInt(getComputedStyle(mapPinMain).height, 10)
   };
 
+  var mapBlockDataSize = window.main.mapBlock.getBoundingClientRect();
+
+  var MAX_NUMBER_PIN = 5;
+
+  var MAX_PIN_TOP = 630;
+  var MIN_PIN_TOP = 130;
+
+  var MAX_PIN_LEFT = mapBlockDataSize.width - mainPinDataSize.width;
+  var MIN_PIN_LEFT = 0;
+
+  var mapCardTmp = document.querySelector('#pin');
+  var mapPins = document.querySelector('.map__pins');
+  var mapPinTmp = mapCardTmp.content.querySelector('.map__pin');
+
   var pinElementsListHTML = [];
   var currentSentenceList = [];
 
-  function dataLoad(e) {
-    outputMapPins(window.main.sentenceList = e);
+  function dataLoad(evt) {
+    window.main.sentenceList = evt;
+    outputMapPins(window.main.sentenceList);
   }
 
   function dataError() {
@@ -37,9 +48,9 @@
     pin.style.left = object.location.x + 'px';
     pin.style.top = object.location.y + 'px';
 
-    pin.setAttribute('data-index-pin', index);
+    pin.dataset.indexPin = index;
 
-    pin.addEventListener('click', window.card.outputMapCard);
+    pin.addEventListener('click', window.card.onCardOutputClick);
 
     return pin;
   }
@@ -48,13 +59,12 @@
     currentSentenceList = dataPins;
     var mapPinContainer = document.createDocumentFragment();
 
-    var len = dataPins.length >= 5 ? 5 : dataPins.length;
-
-    for (var i = 0; i < len; i++) {
-      var pin = getMapPin(dataPins[i], i);
+    var numberPin = (dataPins.length >= MAX_NUMBER_PIN ? MAX_NUMBER_PIN : dataPins.length);
+    dataPins.slice(0, numberPin).forEach(function (dataPin, i) {
+      var pin = getMapPin(dataPin, i);
       pinElementsListHTML.push(pin);
       mapPinContainer.appendChild(pin);
-    }
+    });
 
     mapPins.appendChild(mapPinContainer);
   }
@@ -67,15 +77,9 @@
     pinElementsListHTML = [];
   }
 
-  // drag-n-drop логика для метки pin
-  var mapBlockDataSize = window.main.mapBlock.getBoundingClientRect();
   var dataDragMainPin = {};
-
-  var MAX_PIN_TOP = 630;
-  var MIN_PIN_TOP = 130;
-
-  mapPinMain.addEventListener('mousedown', mousePinDown);
-  function mousePinDown(e) {
+  mapPinMain.addEventListener('mousedown', onPinMouseDown);
+  function onPinMouseDown(evt) {
     if (window.main.mapBlock.classList.contains('map--faded')) {
       window.main.openedPage();
       window.form.disabledFormFields(false);
@@ -87,22 +91,22 @@
     }
 
     dataDragMainPin = {
-      x: e.clientX - mapPinMain.offsetLeft,
-      y: e.clientY - mapPinMain.offsetTop
+      x: evt.clientX - mapPinMain.offsetLeft,
+      y: evt.clientY - mapPinMain.offsetTop
     };
 
-    document.addEventListener('mousemove', mousePinMove);
-    document.addEventListener('mouseup', mousePinUp);
+    document.addEventListener('mousemove', onPinMouseMove);
+    document.addEventListener('mouseup', onPinMouseUp);
   }
 
-  function mousePinMove(e) {
-    var x = e.clientX - dataDragMainPin.x;
-    var y = e.clientY - dataDragMainPin.y;
+  function onPinMouseMove(evt) {
+    var x = evt.clientX - dataDragMainPin.x;
+    var y = evt.clientY - dataDragMainPin.y;
 
-    if (x >= mapBlockDataSize.width - mainPinDataSize.width) {
-      x = mapBlockDataSize.width - mainPinDataSize.width;
-    } else if (x <= 0) {
-      x = 0;
+    if (x >= MAX_PIN_LEFT) {
+      x = MAX_PIN_LEFT;
+    } else if (x <= MIN_PIN_LEFT) {
+      x = MIN_PIN_LEFT;
     }
 
     if (y >= MAX_PIN_TOP) {
@@ -115,9 +119,9 @@
     window.form.outputPinCoordinate(Math.round(x + mainPinDataSize.width / 2) + ', ' + (y + mainPinDataSize.height));
   }
 
-  function mousePinUp() {
-    document.removeEventListener('mousemove', mousePinMove);
-    document.removeEventListener('mouseup', mousePinUp);
+  function onPinMouseUp() {
+    document.removeEventListener('mousemove', onPinMouseMove);
+    document.removeEventListener('mouseup', onPinMouseUp);
 
     var coord = getMainPinCoordinate();
     window.form.outputPinCoordinate(Math.round(coord.x + mainPinDataSize.width / 2) + ', ' + (coord.y + mainPinDataSize.height));

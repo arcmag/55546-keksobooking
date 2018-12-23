@@ -16,28 +16,37 @@
 
     if (status === 'error') {
       messageBlockButton = messageBlock.querySelector('.error__button');
-      messageBlockButton.addEventListener('click', destroyBlock);
+      messageBlockButton.addEventListener('click', onMessageBlockDestroyClick);
     }
 
     document.querySelector('main').appendChild(messageBlock);
+    document.addEventListener('click', onMessageBlockDestroyClick);
+    document.addEventListener('keyup', onMessageBlockDestroyKeyUp);
 
-    function destroyBlock(e) {
-      var elem = e.target;
+    function destroyMessageBlock() {
+      document.removeEventListener('click', onMessageBlockDestroyClick);
+      document.removeEventListener('keyup', onMessageBlockDestroyKeyUp);
 
-      if (elem.classList.contains(status) || elem.classList.contains(status + '__button') || e.keyCode === window.main.ESC_KEYCODE) {
-        document.removeEventListener('click', destroyBlock);
-        document.removeEventListener('keyup', destroyBlock);
+      if (messageBlockButton) {
+        messageBlockButton.removeEventListener('click', onMessageBlockDestroyClick);
+      }
 
-        if (messageBlockButton) {
-          messageBlockButton.removeEventListener('click', destroyBlock);
-        }
+      messageBlock.parentElement.removeChild(messageBlock);
+    }
 
-        messageBlock.parentElement.removeChild(messageBlock);
+    function onMessageBlockDestroyClick(evt) {
+      var elem = evt.target;
+
+      if (elem.classList.contains(status) || elem.classList.contains(status + '__button')) {
+        destroyMessageBlock();
       }
     }
 
-    document.addEventListener('click', destroyBlock);
-    document.addEventListener('keyup', destroyBlock);
+    function onMessageBlockDestroyKeyUp(evt) {
+      if (evt.keyCode === window.main.ESC_KEYCODE) {
+        destroyMessageBlock();
+      }
+    }
   }
 
   function openedPage() {
